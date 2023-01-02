@@ -1,0 +1,16 @@
+{
+  "name": "png_to_svg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "autotrace": "^0.0.2",
+    "node-clipboardy": "^1.0.3",
+    "potrace": "^2.1.8"
+  }
+}
