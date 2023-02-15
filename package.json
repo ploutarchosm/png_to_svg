@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "create:svg": "node index.js",
+    "create:json": "node index.js"
   },
   "author": "",
   "license": "ISC",

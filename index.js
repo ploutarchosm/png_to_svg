@@ -1,28 +1,33 @@
-const fs = require("fs");
 const path = require("path");
 const potrace = require("potrace");
-const trace = new potrace.Potrace();
+const fs = require("fs").promises;
 
-const createSvg = (image) =>
-  `<svg xmlns="http://www.w3.org/2000/svg">${image}</svg>`;
-const createDelay = ms => new Promise(res => setTimeout(res, ms))
+const createSvg = (symbol) => `<svg xmlns="http://www.w3.org/2000/svg">${symbol}</svg>`;
 
-const createFile = async (time, file) => {
-  await createDelay(time);
-  trace.loadImage(file, (err) => {
-    if (err) throw err;
-    let fName = path.parse(file).name;
-    fs.writeFileSync(path.join(__dirname, 'svg', fName + '.svg'), createSvg(trace.getSymbol(fName)))
+const writeToFile = async (filePath) => {
+  return new Promise((resolve, reject) => {
+    const trace = new potrace.Potrace();
+    trace.loadImage(filePath, function(err) {
+      if (err) reject(err);
+      let fileName = path.parse(filePath).name;
+      fs.writeFile(path.join(__dirname, 'svg', fileName + '.svg'), createSvg(trace.getSymbol(fileName)));
+      resolve(true);
+    });
   });
 }
 
-fs.readdir(path.join(__dirname, "png"), (err, files) => {
-  if (err) {
-    throw err;
+const readFiles = async () => {
+  try {
+    let convertedFiles = 0
+    const files = await fs.readdir(path.join(__dirname, "png"));
+    files.forEach(async file => {
+      await writeToFile(path.join(__dirname, "png", file));
+      convertedFiles++;
+      console.log(`${convertedFiles}/${files.length} converted`)
+    })
+  } catch (err) {
+    console.error('Error occurred while reading directory!', err);
   }
-  for (let i=0; i < files.length; i++) {
-    (async (i) => {
-      await createFile(100 * i, path.join(__dirname, "png", files[i]))
-    })(i)
-  }
-});
+}
+
+readFiles();
